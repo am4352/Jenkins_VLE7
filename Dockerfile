@@ -1,26 +1,19 @@
 
-# Build stage
 FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-# Copy dependency definitions first
-COPY go.mod go.sum ./
+COPY go.mod ./
 RUN go mod download
 
-# Copy the application source
-COPY . .
+COPY main.go ./
 
-# Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o server .
+RUN CGO_ENABLED=0 GOOS=linux go build -o app main.go
 
-# Runtime stage
 FROM alpine:3.22
 
 WORKDIR /app
 
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/app .
 
-EXPOSE 8080
-
-CMD ["./server"]
+CMD ["./app"]
