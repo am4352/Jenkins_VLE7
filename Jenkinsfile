@@ -9,11 +9,24 @@ pipeline {
             }
         }
 
-        stage('Verify Environment') {
+        stage('Verify Go Project') {
             steps {
-                sh 'echo "GitHub checkout successful"'
-                sh 'java -version'
-                sh 'docker --version'
+                sh 'ls -la'
+                sh 'test -f go.mod'
+                sh 'test -f main.go'
+                sh 'test -f Dockerfile'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t vle7-go-app:latest .'
+            }
+        }
+
+        stage('Verify Docker Image') {
+            steps {
+                sh 'docker images vle7-go-app'
             }
         }
     }
